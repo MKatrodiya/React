@@ -25,7 +25,7 @@ constructor(props){
         const name = target.name;
         this.setState(
             {
-                name: value
+                [name]: value
             }
         )
     }
