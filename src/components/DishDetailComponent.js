@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, Button, Label, Col, Row, Collapse, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Link } from 'react-router-dom'
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading, LOADING } from './LoadingComponent';
 
     function RenderDish({dish}){
         if(dish != null){
@@ -25,7 +26,7 @@ import { Control, LocalForm, Errors } from 'react-redux-form';
         }
     }
 
-    function RenderComments({ comments }){
+    function RenderComments({ comments, addComment, dishId }){
         // console.log(comments);
         if(comments!=null){
             const cmnts = comments.map(
@@ -47,7 +48,7 @@ import { Control, LocalForm, Errors } from 'react-redux-form';
                     <ul className="list-unstyled">
                         {cmnts}
                     </ul>
-                    <CommentForm />
+                    <CommentForm dishId={dishId} addComment={addComment} />
                 </div>
             );
         }
@@ -72,6 +73,7 @@ import { Control, LocalForm, Errors } from 'react-redux-form';
             }
 
             this.toggleModal = this.toggleModal.bind(this);
+            this.handleSubmit = this.handleSubmit.bind(this);
         }
 
         toggleModal(){
@@ -81,8 +83,8 @@ import { Control, LocalForm, Errors } from 'react-redux-form';
         }
 
         handleSubmit(values) {
-            console.log("Current State is: " + JSON.stringify(values));
-            alert("Current State is: " + JSON.stringify(values));
+            this.toggleModal();
+            this.props.addComment(this.props.dishId, values.rating, values.author, values.comment)
         }
 
         render(){
@@ -163,32 +165,53 @@ import { Control, LocalForm, Errors } from 'react-redux-form';
         }
 
         render(){
-            if(this.props.dish==null){
+            if(this.props.isLoading){
+                return(
+                    <div className="container">
+                        <div className="row">
+                            <Loading />
+                        </div>
+                    </div>
+                );
+            }
+            else if(this.props.errMess){
+                return(
+                    <div className="container">
+                        <div className="row">
+                            <h4>{this.props.errMess}</h4>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if(this.props.dish!=null){
+                return(
+                    <div className="container">
+                        <div className="row">
+                            <Breadcrumb>
+                                <BreadcrumbItem><Link to='/menu'>Menu</Link></BreadcrumbItem>
+                                <BreadcrumbItem active>{this.props.dish.name}</BreadcrumbItem>
+                            </Breadcrumb>
+                            <div className="col-12">
+                                <h3>{this.props.dish.name}</h3>
+                                <hr/>
+                            </div>
+                        </div>
+                            <div className="row">
+                                <RenderDish dish={this.props.dish} />
+                                <RenderComments comments={this.props.comments} addComment={this.props.addComment}
+                                    dishId={this.props.dish.id}
+                                />
+                            </div>
+                    </div>
+                );
+            }
+            else{
                 return(
                     <div></div>
                 );
             }
-    
             // console.log("DishDetail component rendor is invoked");
-    
-            return(
-                <div className="container">
-                    <div className="row">
-                        <Breadcrumb>
-                            <BreadcrumbItem><Link to='/menu'>Menu</Link></BreadcrumbItem>
-                            <BreadcrumbItem active>{this.props.dish.name}</BreadcrumbItem>
-                        </Breadcrumb>
-                        <div className="col-12">
-                            <h3>{this.props.dish.name}</h3>
-                            <hr/>
-                        </div>
-                    </div>
-                        <div className="row">
-                            <RenderDish dish={this.props.dish} />
-                            <RenderComments comments={this.props.comments} />
-                        </div>
-                </div>
-            );
         }
     }
 
