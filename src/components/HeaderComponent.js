@@ -79,7 +79,7 @@ class Header extends Component{
                     </div>
                 </Navbar>
                 <Jumbotron>
-                    <div class="container">
+                    <div className="container">
                         <div className="row row-header">
                             <div className="col-12 col-sm-6">
                                 <h1>Ristorante Con Fusion</h1>
